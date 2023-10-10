@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pincode to City and State</title>
+    <style>
+        .readonly-field {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border: none;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+
+        <label for="pincode">Pincode:</label>
+    <input type="text" id="pincodeInput" placeholder="Enter Pincode">
+    <button id="fetchDetails">Get City and State</button>
+    <br><br>
+    <label for="city">City:</label>
+    <input type="text" class="readonly-field" id="city" readonly>
+    <br><br>
+    <label for="state">State:</label>
+    <input type="text" class="readonly-field" id="state" readonly>
+    <br><br>
+    <!-- <div class="form-group"> -->
+        <label for="addressLine1">Address Line 1<span>*</span></label>
+        <input type="text" id="addressLine1" name="addressLine1" maxlength="25" required>
+    <!-- </div> -->
+    <br><br>
+    <!-- <div class="form-group"> -->
+        <label for="addressLine2">Address Line 2<span>*</span></label>
+        <input type="text" id="addressLine2" name="addressLine2" maxlength="25" required>
+    <!-- </div> -->
+    <br><br>
+    
+        
+    </div>
+
+
+
+    
+    <script>
+        document.getElementById('fetchDetails').addEventListener('click', function () {
+            const pincode = document.getElementById('pincodeInput').value;
+            if (pincode && pincode.length==6) {
+                fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data[0].Status === 'Success') {
+                            const postOffice = data[0].PostOffice[0];
+                            const city = postOffice.Block;
+                            const state = postOffice.State;
+                            document.getElementById('city').value = city;
+                            document.getElementById('state').value = state;
+                        } else {
+                            document.getElementById('pincodeInput').innerHTML = 'Invalid Pincode';
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        document.getElementById('city').innerHTML = 'Error occurred while fetching data.';
+                    });
+            } else {
+                document.getElementById('city').innerHTML = 'Please enter a pincode.';
+            }
+        });
+    </script>
+</body>
+</html>
